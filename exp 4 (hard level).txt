@@ -1,0 +1,71 @@
+import java.util.*;
+
+class TicketBookingSystem {
+    private int availableSeats;
+
+    public TicketBookingSystem(int seats) {
+        this.availableSeats = seats;
+    }
+
+    
+    public synchronized boolean bookSeat(String name) {
+        if (availableSeats > 0) {
+            System.out.println(name + " booked a seat. Seats left: " + (--availableSeats));
+            return true;
+        } else {
+            System.out.println(name + " attempted to book, but no seats are available.");
+            return false;
+        }
+    }
+}
+
+class Customer extends Thread {
+    private TicketBookingSystem bookingSystem;
+    private String customerType; // VIP or Regular
+
+    public Customer(TicketBookingSystem bookingSystem, String name, int priority, String customerType) {
+        super(name);
+        this.bookingSystem = bookingSystem;
+        this.customerType = customerType;
+        this.setPriority(priority); 
+    }
+
+    @Override
+    public void run() {
+        bookingSystem.bookSeat(getName());
+    }
+}
+
+public class TicketBookingApp {
+    public static void main(String[] args) {
+        TicketBookingSystem system = new TicketBookingSystem(5); // Total 5 seats
+        
+        Customer c1 = new Customer(system, "VIP-1", Thread.MAX_PRIORITY, "VIP");
+        Customer c2 = new Customer(system, "Regular-1", Thread.NORM_PRIORITY, "Regular");
+        Customer c3 = new Customer(system, "VIP-2", Thread.MAX_PRIORITY, "VIP");
+        Customer c4 = new Customer(system, "Regular-2", Thread.NORM_PRIORITY, "Regular");
+        Customer c5 = new Customer(system, "Regular-3", Thread.NORM_PRIORITY, "Regular");
+        Customer c6 = new Customer(system, "VIP-3", Thread.MAX_PRIORITY, "VIP"); 
+
+        c1.start();
+        c2.start();
+        c3.start();
+        c4.start();
+        c5.start();
+        c6.start();
+
+       
+        try {
+            c1.join();
+            c2.join();
+            c3.join();
+            c4.join();
+            c5.join();
+            c6.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Booking process completed.");
+    }
+}

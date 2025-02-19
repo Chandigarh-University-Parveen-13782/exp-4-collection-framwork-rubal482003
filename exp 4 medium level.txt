@@ -1,0 +1,94 @@
+import java.util.*;
+
+class Card {
+    private String symbol;
+    private int number;
+
+    public Card(String symbol, int number) {
+        this.symbol = symbol;
+        this.number = number;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    @Override
+    public String toString() {
+        return "Card{Symbol='" + symbol + "', Number=" + number + "}";
+    }
+}
+
+public class CardCollection {
+    private static Map<String, List<Card>> cardMap = new HashMap<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("\nCard Collection System:");
+            System.out.println("1. Add Card");
+            System.out.println("2. Search Cards by Symbol");
+            System.out.println("3. Display All Cards");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            
+            switch (choice) {
+                case 1: addCard(); break;
+                case 2: searchBySymbol(); break;
+                case 3: displayAllCards(); break;
+                case 4: System.out.println("Exiting..."); return;
+                default: System.out.println("Invalid choice! Try again.");
+            }
+        }
+    }
+
+    private static void addCard() {
+        System.out.print("Enter card symbol: ");
+        String symbol = scanner.nextLine();
+        System.out.print("Enter card number: ");
+        int number = scanner.nextInt();
+
+        Card newCard = new Card(symbol, number);
+        cardMap.putIfAbsent(symbol, new ArrayList<>());
+        cardMap.get(symbol).add(newCard);
+
+        System.out.println("Card added successfully!");
+    }
+
+    private static void searchBySymbol() {
+        System.out.print("Enter symbol to search: ");
+        String symbol = scanner.nextLine();
+
+        List<Card> cards = cardMap.get(symbol);
+        if (cards != null) {
+            System.out.println("Cards with symbol '" + symbol + "':");
+            for (Card card : cards) {
+                System.out.println(card);
+            }
+        } else {
+            System.out.println("No cards found for symbol: " + symbol);
+        }
+    }
+
+    private static void displayAllCards() {
+        if (cardMap.isEmpty()) {
+            System.out.println("No cards in the collection.");
+            return;
+        }
+
+        System.out.println("\nAll Cards:");
+        for (Map.Entry<String, List<Card>> entry : cardMap.entrySet()) {
+            System.out.println("Symbol: " + entry.getKey());
+            for (Card card : entry.getValue()) {
+                System.out.println("  " + card);
+            }
+        }
+    }
+}
